@@ -127,20 +127,26 @@ código fuente: es un artefacto generado, igual que `dist/`. **Debe
 reconstruirse antes de cada `python -m build`** (si no, el paquete se
 publica con la documentación desactualizada o sin ella).
 
-## Publicar en PyPI
+## Publicar una versión nueva
 
-```bash
-python -m sphinx -b html doc orangecontrib/orange_gualbe_ts/_help/html
-python -m pip install --upgrade build twine
-python -m build
-twine check dist/*
-twine upload dist/*
-```
+La publicación en PyPI es automática mediante
+[Trusted Publishing](https://docs.pypi.org/trusted-publishers/): al
+publicar una release en GitHub, el workflow
+`.github/workflows/publish.yml` genera la ayuda, construye el paquete,
+lo sube a PyPI (sin tokens) y adjunta los ficheros a la release. Así
+GitHub y PyPI no pueden quedar desincronizados.
 
-`twine upload` pedirá tu usuario (`__token__`) y tu API token de PyPI.
-Para la primera publicación de un proyecto nuevo, el token debe tener
-ámbito "Entire account" (uno limitado a un proyecto concreto no puede
-crearlo).
+1. Sube `version` en `pyproject.toml` y haz commit y push a `main`.
+2. Crea la release con una etiqueta `v` + la misma versión:
+
+   ```bash
+   gh release create v0.2.2 --title "v0.2.2" --notes "Cambios de esta versión"
+   ```
+
+El workflow rechaza la publicación si la etiqueta no coincide con la
+versión de `pyproject.toml`. Para validar la construcción sin publicar,
+lánzalo a mano desde la pestaña *Actions* (o con
+`gh workflow run publish.yml`).
 
 ## Requisitos de los datos de entrada
 
