@@ -1,160 +1,186 @@
-# orange_gualbe_ts
+<p align="center">
+  <img src="https://raw.githubusercontent.com/gualbe/orange_gualbe_ts/main/assets/banner.svg" alt="orange_gualbe_ts: utilidades de series temporales para Orange Data Mining" width="860">
+</p>
 
-Add-on de **utilidades para series temporales** para
-[Orange Data Mining](https://orangedatamining.com/).
+<p align="center">
+  <a href="https://pypi.org/project/orange-gualbe-ts/"><img src="https://img.shields.io/pypi/v/orange-gualbe-ts?label=PyPI&color=3EA6A6" alt="Versión en PyPI"></a>
+  <a href="https://github.com/gualbe/orange_gualbe_ts/actions/workflows/publish.yml"><img src="https://github.com/gualbe/orange_gualbe_ts/actions/workflows/publish.yml/badge.svg" alt="Estado de la publicación en PyPI"></a>
+  <a href="https://github.com/gualbe/orange_gualbe_ts/blob/main/LICENSE"><img src="https://img.shields.io/badge/licencia-GPL--3.0-blue" alt="Licencia GPL-3.0"></a>
+  <a href="https://orangedatamining.com/"><img src="https://img.shields.io/badge/Orange3-add--on-F7941D" alt="Add-on de Orange3"></a>
+</p>
 
-Añade una nueva categoría "Utilidades de Series Temporales" al lienzo de
-Orange, con widgets que trabajan sobre series temporales (tablas de tipo
-`Timeseries`) generadas por el add-on
-[Orange3-Timeseries](https://orange3-timeseries.readthedocs.io/), del
-que este add-on depende.
+Add-on para [Orange Data Mining](https://orangedatamining.com/) que añade
+la categoría **Utilidades de Series Temporales** al lienzo, con widgets
+para preparar series temporales y para pronosticarlas con cualquier
+modelo de regresión de Orange. Trabaja sobre las series temporales del
+add-on [Orange3-Timeseries](https://orange3-timeseries.readthedocs.io/),
+del que depende.
 
-## Widgets incluidos
+| Widget | Para qué sirve |
+| --- | --- |
+| **Variables Lag/Lead** | Añade a la tabla copias desplazadas de las variables elegidas: valores de *t-1 … t-T* (pasado) y *t+1 … t+T* (futuro). |
+| **Predicción vía Regresión** | Pronostica la serie con kNN, Árbol, Regresión Lineal, Bosque Aleatorio… usando sus propios lags. Se compara con ARIMA y VAR en *Model Evaluation*. |
 
-### Variables Lag/Lead
+## Instalación
 
-Genera nuevas variables desplazadas en el tiempo (*lag*: valores del
-pasado; *lead*: valores del futuro) y las **agrega** a la tabla de
-entrada, conservando todas las variables originales.
+Desde Orange: menú **Options → Add-ons…**, botón **Add more…**, escribe
+`orange_gualbe_ts` y reinicia Orange.
 
-- **Entrada**: una tabla `Timeseries` con variable temporal definida —
-  es decir, que ya ha pasado por el widget **Form Timeseries** (u otro
-  widget de Orange3-Timeseries que también produzca una serie temporal).
-- El widget acumula **operaciones** (variables a considerar + tamaño de
-  ventana T + dirección pasado/futuro) en una lista, sin ejecutarlas.
-  Al pulsar **Aplicar**, se ejecutan todas.
-- Una operación con ventana **T** genera **T variables**, no solo una:
-  por ejemplo, T=3 en "Pasado" sobre `Pepe` genera `Pepe_t-1`,
-  `Pepe_t-2` y `Pepe_t-3`.
-- Las filas sin dato disponible tras el desplazamiento (por ejemplo, las
-  primeras filas de un `LAG`) quedan con un valor ausente compatible con
-  Orange.
-- La salida conserva **todas** las variables originales (incluida la
-  temporal y los metadatos) y añade las variables lag/lead generadas,
-  con un orden de columnas fijo: primero las variables no elegidas para
-  ninguna operación (en su orden original), y luego, para cada variable
-  sí elegida (en su orden original), un bloque temporal del pasado más
-  lejano al futuro más lejano con la variable original en el centro —
-  p. ej. `Pepe_t-3, Pepe_t-2, Pepe_t-1, Pepe, Pepe_t+1, Pepe_t+2, Pepe_t+3`.
-
-### Predicción vía Regresión
-
-Pronostica una serie temporal aplicando un algoritmo de **regresión**
-cualquiera del panel "Model" de Orange (kNN, Árbol, Regresión Lineal,
-Bosque Aleatorio, SVM, Red Neuronal...) sobre los propios valores
-anteriores de la serie (lags), en vez de un método de ajuste fijo como
-usan **ARIMA Model** o **VAR Model** — de hecho, en cuanto a entradas y
-salidas funciona igual que esos dos widgets, así que se puede conectar
-a **Model Evaluation** para comparar sus errores con los de ARIMA/VAR.
-
-- **Entradas**: "Time series" (la serie a pronosticar, con target
-  continuo) y **"Learner"** (el algoritmo de regresión a usar — la
-  salida "Learner" de cualquier widget del panel "Model").
-- **Salidas**: "Time series model" (para Model Evaluation), "Forecast"
-  (pronóstico + intervalo de confianza), "Fitted values" y "Residuals".
-- Parámetros propios: **orden autorregresivo (T)** — cuántos valores
-  anteriores de la serie se usan como atributos para predecir el
-  siguiente — y **orden autorregresivo en variables exógenas (Tx)** —
-  opcional (0 por defecto): si es mayor que 0, añade también los Tx
-  valores anteriores de cada una de las demás variables de la tabla
-  (no la temporal, no la objetivo) como atributos adicionales. "Forecast
-  steps ahead" y "Confidence intervals" son los mismos controles que
-  usan ARIMA y VAR.
-- El pronóstico a varios pasos es recursivo (igual que ARIMA/VAR): se
-  predice un paso, se añade al historial, y se repite. Para las
-  variables exógenas (Tx > 0), como no se conoce su valor real futuro,
-  a partir del segundo paso se asume que cada una mantiene su último
-  valor observado ("carry forward").
-- El intervalo de confianza es una **aproximación** (desviación típica
-  de los residuos, ensanchada con la raíz del horizonte) — un learner
-  de regresión genérico no tiene una fórmula cerrada como ARIMA/VAR.
-  Por la misma razón, AIC/BIC no se calculan (aparecen como error si se
-  usa junto a **Model Evaluation**); el resto de métricas sí.
-
-Ambos widgets integran su ayuda con el **sistema de ayuda nativo de
-Orange**: selecciona el widget en el lienzo y pulsa **F1**, o haz clic
-en el icono **"?"** de la barra de estado del widget.
-
-## Instalación para desarrollo
+O con `pip`, en el mismo entorno de Python que Orange (instala también
+Orange3-Timeseries):
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install Orange3 PyQt5 Orange3-Timeseries
-pip install -e .
+pip install orange_gualbe_ts
 ```
 
-Abrir Orange Canvas con el add-on instalado:
+## Flujo de trabajo típico
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/gualbe/orange_gualbe_ts/main/assets/flujo.svg" alt="Flujo en el lienzo de Orange: File, Form Timeseries, Variables Lag/Lead, Predicción vía Regresión con un learner kNN, ARIMA y Model Evaluation">
+</p>
+
+1. **Form Timeseries** convierte la tabla en serie temporal. Los dos
+   widgets solo aceptan series temporales: el lienzo no deja conectar una
+   tabla normal.
+2. **Variables Lag/Lead** añade variables desplazadas en el tiempo, por
+   ejemplo para usarlas después como atributos de cualquier modelo.
+3. **Predicción vía Regresión** recibe la serie y un modelo del panel
+   *Model* por su entrada *Learner*. Su salida *Time series model* se
+   conecta a **Model Evaluation**, junto con ARIMA o VAR, para comparar
+   errores. *Model Evaluation* también necesita la serie, desde Form
+   Timeseries (enlace superior del esquema).
+
+## Variables Lag/Lead
+
+Cada operación indica **variables**, **tamaño de ventana T** y
+**dirección** (pasado o futuro). Las operaciones se acumulan en una lista
+y se ejecutan juntas al pulsar **Aplicar**.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/gualbe/orange_gualbe_ts/main/assets/lag_lead.svg" alt="Ejemplo: Ventas con LAG T=3 y LEAD T=3 genera Ventas_t-3 a Ventas_t+3, con valores ausentes donde no hay dato">
+</p>
+
+- Una ventana **T** genera **T variables**: `Ventas_t-1 … Ventas_t-3` en
+  pasado, `Ventas_t+1 … Ventas_t+3` en futuro (como `LAG()`/`LEAD()` en
+  SQL o `shift()` en pandas).
+- Se **conservan todas las variables originales**. El orden de columnas
+  es fijo: primero las variables no elegidas y luego, por cada variable
+  elegida, su bloque del pasado más lejano al futuro más lejano, con la
+  original en el centro.
+- Donde no hay dato (primeras filas de un LAG, últimas de un LEAD) queda
+  un valor ausente de Orange (`?`).
+- Si dos operaciones piden la misma variable y dirección, no se duplican
+  columnas: se usa el T mayor.
+- Admite atributos y variable objetivo de cualquier tipo (continuas,
+  discretas o temporales), pero no metadatos. La variable temporal no se
+  desplaza.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/gualbe/orange_gualbe_ts/main/assets/captura_lag_lead.png" alt="Interfaz del widget Variables Lag/Lead" width="400">
+</p>
+
+## Predicción vía Regresión
+
+Funciona como los widgets **ARIMA Model** y **VAR Model** (mismas
+salidas y controles de horizonte y confianza), pero el algoritmo lo
+pones tú: cualquier modelo de regresión del panel *Model* de Orange, con
+su configuración.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/gualbe/orange_gualbe_ts/main/assets/prediccion.svg" alt="Entrenamiento con una ventana de T lags que forma una tabla interna, y pronóstico recursivo donde cada predicción pasa a ser el lag del paso siguiente">
+</p>
+
+**Entradas:** *Time series* (serie con variable objetivo continua) y
+*Learner* (salida de kNN, Tree, Linear Regression, Random Forest, SVM,
+Neural Network…).
+
+**Salidas:** *Time series model* (para *Model Evaluation*), *Forecast*
+(predicción con intervalo de confianza), *Fitted values* y *Residuals*.
+
+**Parámetros:**
+
+| Parámetro | Qué controla |
+| --- | --- |
+| Orden autorregresivo (T) | Cuántos valores anteriores de la serie se usan como atributos. |
+| Orden autorregresivo en variables exógenas (Tx) | Opcional (0 = desactivado). Añade los Tx valores anteriores de las demás variables de la tabla. |
+| Forecast steps ahead | Cuántos pasos futuros se pronostican. |
+| Confidence intervals | Nivel de confianza del intervalo. |
+
+**A tener en cuenta:**
+
+- El pronóstico de varios pasos es **recursivo**: cada predicción se
+  reutiliza como dato para el paso siguiente, igual que en ARIMA y VAR.
+- El futuro de las variables exógenas no se conoce. A partir del segundo
+  paso se mantiene su último valor observado.
+- El intervalo de confianza es **aproximado** (desviación de los residuos,
+  creciente con √h): un modelo de regresión genérico no tiene una fórmula
+  exacta como ARIMA o VAR. Por eso *Model Evaluation* muestra AIC y BIC
+  como error para este modelo; el resto de métricas se calculan con
+  normalidad.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/gualbe/orange_gualbe_ts/main/assets/captura_prediccion.png" alt="Interfaz del widget Predicción vía Regresión" width="440">
+</p>
+
+## Ayuda dentro de Orange
+
+Selecciona un widget en el lienzo y pulsa **F1**, o el icono **?** de su
+barra de estado, para abrir su documentación.
+
+## Desarrollo
 
 ```bash
+git clone https://github.com/gualbe/orange_gualbe_ts.git
+cd orange_gualbe_ts
+python -m venv .venv && source .venv/bin/activate
+pip install Orange3 PyQt5 Orange3-Timeseries sphinx
+pip install -e .
 python -m Orange.canvas
 ```
 
-Los widgets aparecerán en el lienzo bajo la categoría "Utilidades de
-Series Temporales". Para conectar **Variables Lag/Lead** o la entrada
-"Time series" de **Predicción vía Regresión**, primero se necesita un
-widget que produzca una serie temporal (por ejemplo, **Form Timeseries**
-del add-on Orange3-Timeseries) — ambas entradas rechazan a nivel de
-conexión cualquier tabla que no sea de tipo `Timeseries`. La entrada
-"Learner" de **Predicción vía Regresión** acepta cualquier widget del
-panel "Model" de Orange (kNN, Árbol, Regresión Lineal, Bosque
-Aleatorio...).
-
-## Ayuda de los widgets (documentación)
-
-La ayuda que se abre con F1/"?" se genera con [Sphinx](https://www.sphinx-doc.org/)
-a partir de los archivos en `doc/`. Cada widget tiene una página en
-`doc/widgets/<nombre>.rst`, con una etiqueta al inicio que debe coincidir
-**exactamente** con el nombre del widget en minúsculas (por ejemplo,
-`.. _variables lag/lead:` para el widget `name = "Variables Lag/Lead"`) —
-así es como Orange encuentra la página correcta.
-
-El HTML generado se guarda **dentro del propio paquete**
-(`orangecontrib/orange_gualbe_ts/_help/html/`), no en `doc/build/`, para
-que la ayuda funcione también en instalaciones normales desde PyPI (no
-solo en modo editable) — se declara como `package-data` en
-`pyproject.toml` y viaja dentro del wheel.
-
-Para (re)generar la documentación tras editar o añadir un widget:
+**Ayuda (F1).** Se genera con [Sphinx](https://www.sphinx-doc.org/) desde
+`doc/`, dentro del propio paquete, para que funcione también instalada
+desde PyPI:
 
 ```bash
-pip install sphinx
 python -m sphinx -b html doc orangecontrib/orange_gualbe_ts/_help/html
 ```
 
-`orangecontrib/orange_gualbe_ts/_help/` no se versiona en el control de
-código fuente: es un artefacto generado, igual que `dist/`. **Debe
-reconstruirse antes de cada `python -m build`** (si no, el paquete se
-publica con la documentación desactualizada o sin ella).
+Cada widget tiene su página `doc/widgets/<nombre>.rst`, que empieza con
+una etiqueta igual al nombre del widget en minúsculas (por ejemplo,
+`.. _variables lag/lead:`). Así la encuentra Orange. La carpeta `_help/`
+es generada y no se versiona.
+
+**Imágenes de este README.** Están en `assets/` y se regeneran con:
+
+```bash
+python assets/generar_imagenes.py --capturas
+```
 
 ## Publicar una versión nueva
 
 La publicación en PyPI es automática mediante
-[Trusted Publishing](https://docs.pypi.org/trusted-publishers/): al
+[Trusted Publishing](https://docs.pypi.org/trusted-publishers/). Al
 publicar una release en GitHub, el workflow
 `.github/workflows/publish.yml` genera la ayuda, construye el paquete,
-lo sube a PyPI (sin tokens) y adjunta los ficheros a la release. Así
+lo sube a PyPI sin tokens y adjunta los ficheros a la release. Así
 GitHub y PyPI no pueden quedar desincronizados.
 
 1. Sube `version` en `pyproject.toml` y haz commit y push a `main`.
 2. Crea la release con una etiqueta `v` + la misma versión:
 
    ```bash
-   gh release create v0.2.2 --title "v0.2.2" --notes "Cambios de esta versión"
+   gh release create v0.2.3 --title "v0.2.3" --notes "Cambios de esta versión"
    ```
 
 El workflow rechaza la publicación si la etiqueta no coincide con la
 versión de `pyproject.toml`. Para validar la construcción sin publicar,
-lánzalo a mano desde la pestaña *Actions* (o con
-`gh workflow run publish.yml`).
+lánzalo a mano desde la pestaña *Actions* o con
+`gh workflow run publish.yml`.
 
-## Requisitos de los datos de entrada
+## Licencia
 
-- La tabla de entrada debe ser una serie temporal (`Timeseries`) con
-  variable temporal definida — pásala antes por **Form Timeseries**.
-- **Variables Lag/Lead**: las variables a desplazar deben ser atributos
-  o la variable objetivo de la tabla (no metadatos), de cualquier tipo
-  (continuas, discretas o temporales).
-- **Predicción vía Regresión**: la tabla debe tener una variable
-  objetivo (target) continua, y necesita un learner de regresión
-  conectado a su entrada "Learner".
+[GPL-3.0-or-later](https://github.com/gualbe/orange_gualbe_ts/blob/main/LICENSE).
+Los iconos de Orange y Orange3-Timeseries que aparecen en los esquemas
+pertenecen a sus autores (Bioinformatics Lab, Universidad de Liubliana) y
+se distribuyen también bajo GPL-3.0.
