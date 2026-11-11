@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "Si usas este software, cítalo con los metadatos de este fichero."
+type: software
+title: "orange_gualbe_ts: utilidades de series temporales para Orange Data Mining"
+abstract: >-
+  Add-on de Orange Data Mining con utilidades para series temporales,
+  construido sobre Orange3-Timeseries: variables desplazadas (lag/lead) y
+  pronóstico de series con cualquier modelo de regresión de Orange,
+  comparable con ARIMA y VAR en Model Evaluation.
+authors:
+  - family-names: "Asencio Cortés"
+    given-names: "Gualberto"
+version: "0.2.4"
+date-released: "2026-11-11"
+license: GPL-3.0-or-later
+repository-code: "https://github.com/gualbe/orange_gualbe_ts"
+url: "https://pypi.org/project/orange-gualbe-ts/"
+keywords:
+  - "Orange Data Mining"
+  - "orange3 add-on"
+  - "time series"
+  - "forecasting"
+  - "Orange3-Timeseries"

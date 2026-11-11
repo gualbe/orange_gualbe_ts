@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Gualberto Asencio Cortés
+# Part of orange_gualbe_ts. See the LICENSE and NOTICE files for details.
+
 from AnyQt.QtCore import Qt
 
 from orangewidget.utils.widgetpreview import WidgetPreview
@@ -97,6 +101,8 @@ class OWRegressionModel(OWBaseModel):
             self.regression_learner, self.ar_order, self.exog_ar_order)
 
     def update_learner(self):
+        # Adaptado de OWBaseModel.update_learner() de Orange3-Timeseries
+        # (Bioinformatics Laboratory, FRI UL; GPL-3.0-or-later).
         # A diferencia de ARIMA/VAR, aqui `create_learner()` puede devolver
         # None (todavia no hay Learner conectado); OWBaseModel.update_learner
         # no contempla ese caso y revienta al hacer `learner.name = ...`.

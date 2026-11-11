@@ -10,3 +10,9 @@ add-on para Orange Data Mining.
 
    widgets/lagvariables
    widgets/regressionmodel
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Acerca de
+
+   licencia
