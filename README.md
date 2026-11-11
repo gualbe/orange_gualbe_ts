@@ -212,7 +212,7 @@ metadatos de [`CITATION.cff`](https://github.com/gualbe/orange_gualbe_ts/blob/ma
 (GitHub ofrece «Cite this repository» con el formato APA o BibTeX), por ejemplo:
 
 > Asencio Cortés, G. (2026). *orange_gualbe_ts: utilidades de series temporales
-> para Orange Data Mining* (versión 0.2.4) [Software].
+> para Orange Data Mining* (versión 0.2.5) [Software].
 > https://github.com/gualbe/orange_gualbe_ts
 
 **Componentes de terceros.** El add-on depende de Orange Data Mining y de

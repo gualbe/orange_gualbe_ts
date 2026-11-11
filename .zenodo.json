@@ -1,0 +1,26 @@
+{
+  "title": "orange_gualbe_ts: utilidades de series temporales para Orange Data Mining",
+  "upload_type": "software",
+  "description": "<p>Add-on de Orange Data Mining con utilidades para series temporales, construido sobre Orange3-Timeseries: variables desplazadas (lag/lead) y pronóstico de series con cualquier modelo de regresión de Orange, comparable con ARIMA y VAR en Model Evaluation.</p>\n<p>© 2026 Gualberto Asencio Cortés. Software libre bajo la licencia GPL-3.0-or-later, con los términos adicionales del fichero NOTICE.</p>",
+  "creators": [
+    {
+      "name": "Asencio Cortés, Gualberto"
+    }
+  ],
+  "license": "gpl-3.0-or-later",
+  "language": "spa",
+  "keywords": [
+    "Orange Data Mining",
+    "orange3 add-on",
+    "time series",
+    "forecasting",
+    "Orange3-Timeseries"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://pypi.org/project/orange-gualbe-ts/",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}

@@ -3,6 +3,11 @@
 Cada versión se publica a la vez en GitHub (release `vX.Y.Z`) y en
 [PyPI](https://pypi.org/project/orange-gualbe-ts/).
 
+## 0.2.5 (2026-11-11)
+
+- Metadatos para Zenodo (`.zenodo.json`): cada release se archiva con DOI.
+- Sin cambios funcionales en los widgets.
+
 ## 0.2.4 (2026-11-11)
 
 - Autoría y licencia reforzadas, sin cambiar de licencia (sigue siendo
